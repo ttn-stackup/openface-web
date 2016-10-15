@@ -330,33 +330,11 @@ class OpenFaceServerProtocol(WebSocketServerProtocol):
                         name = "Unknown"
                 else:
                     name = self.people[identity]
-                cv2.putText(annotatedFrame, name, (bb.left(), bb.top() - 10),
-                            cv2.FONT_HERSHEY_SIMPLEX, fontScale=0.75,
-                            color=(152, 255, 204), thickness=2)
 
         if not self.training:
-            msg = {
-                "type": "IDENTITIES",
-                "identities": identities
-            }
-            self.beforeMessage(json.dumps(msg))
-
-            plt.figure()
-            plt.imshow(annotatedFrame)
-            plt.xticks([])
-            plt.yticks([])
-
-            imgdata = StringIO.StringIO()
-            plt.savefig(imgdata, format='png')
-            imgdata.seek(0)
-            content = 'data:image/png;base64,' + \
-                urllib.quote(base64.b64encode(imgdata.buf))
-            msg = {
-                "type": "ANNOTATED",
-                "content": content
-            }
-            plt.close()
-            self.beforeMessage(json.dumps(msg))
+            self.beforeMessage(json.dumps({
+                "name": name
+            }))
 
 if __name__ == '__main__':
     log.startLogging(sys.stdout)
