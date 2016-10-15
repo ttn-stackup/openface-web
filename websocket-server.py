@@ -104,6 +104,10 @@ class OpenFaceServerProtocol(WebSocketServerProtocol):
     def onOpen(self):
         print("WebSocket connection open.")
 
+    def beforeMessage(self, message):
+        print message
+        self.sendMessage(message)
+
     def onMessage(self, payload, isBinary):
         raw = payload.decode('utf8')
         msg = json.loads(raw)
@@ -112,10 +116,10 @@ class OpenFaceServerProtocol(WebSocketServerProtocol):
         if msg['type'] == "ALL_STATE":
             self.loadState(msg['images'], msg['training'], msg['people'])
         elif msg['type'] == "NULL":
-            self.sendMessage('{"type": "NULL"}')
+            self.beforeMessage('{"type": "NULL"}')
         elif msg['type'] == "FRAME":
             self.processFrame(msg['dataURL'], msg['identity'])
-            self.sendMessage('{"type": "PROCESSED"}')
+            self.beforeMessage('{"type": "PROCESSED"}')
         elif msg['type'] == "TRAINING":
             self.training = msg['val']
             if not self.training:
@@ -219,7 +223,7 @@ class OpenFaceServerProtocol(WebSocketServerProtocol):
             "type": "TSNE_DATA",
             "content": content
         }
-        self.sendMessage(json.dumps(msg))
+        self.beforeMessage(json.dumps(msg))
 
     def trainSVM(self):
         print("+ Training SVM on {} labeled images.".format(len(self.images)))
@@ -296,7 +300,7 @@ class OpenFaceServerProtocol(WebSocketServerProtocol):
                         "identity": identity,
                         "representation": rep.tolist()
                     }
-                    self.sendMessage(json.dumps(msg))
+                    self.beforeMessage(json.dumps(msg))
                 else:
                     if len(self.people) == 0:
                         identity = -1
@@ -334,7 +338,7 @@ class OpenFaceServerProtocol(WebSocketServerProtocol):
                 "type": "IDENTITIES",
                 "identities": identities
             }
-            self.sendMessage(json.dumps(msg))
+            self.beforeMessage(json.dumps(msg))
 
             plt.figure()
             plt.imshow(annotatedFrame)
@@ -351,7 +355,7 @@ class OpenFaceServerProtocol(WebSocketServerProtocol):
                 "content": content
             }
             plt.close()
-            self.sendMessage(json.dumps(msg))
+            self.beforeMessage(json.dumps(msg))
 
 if __name__ == '__main__':
     log.startLogging(sys.stdout)
