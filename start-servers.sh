@@ -19,8 +19,7 @@ trap 'kill $(jobs -p)' EXIT
 
 cat <<EOF
 
-Starting the HTTP server on port $HTTP_PORT
-and the WebSocket server on port $WEBSOCKET_PORT.
+Starting WebSocket server on port $WEBSOCKET_PORT.
 
 EOF
 
