@@ -146,6 +146,7 @@ class OpenFaceServerProtocol(WebSocketServerProtocol):
         elif msg['type'] == 'REQ_TSNE':
             self.sendTSNE(msg['people'])
         else:
+            self.beforeMessage("Warning: Unknown message type:")
             print("Warning: Unknown message type: {}".format(msg['type']))
 
     def onClose(self, wasClean, code, reason):
